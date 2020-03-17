@@ -27,5 +27,12 @@ private slots:
     void button_connectLiveRoom();
     void button_dissconnectLiveRoom();
     void TextEdit_newChat(QString name,QString mess);
+    void switchSpeech(int state);
+    void comboBox_changeLanguage(int language);
+    
+    void speechSupportLanguage(QVector<QLocale> list);  //获取语音播报支持的语言
+signals:
+    void setSpeech(bool ok);
+    void setLanguage(QLocale locale);
 };
 #endif // MAINWINDOW_H

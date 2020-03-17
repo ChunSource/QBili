@@ -40,7 +40,7 @@ void WebSocketAPI_Bili::initWebsocket()
     
     connect(websocket,&QWebSocket::connected,this,[=](){
         //             //length             //head 16 // 0 1 2  //2 3 5 7 8
-        char cdata[] = {0x00,0x00,0x00,0x00,0x00,0x10,0x00,0x01,0x00,0x00,0x00,0x07,0x00,0x00,0x00,0x01};
+        char cdata[] = {0x00,0x00,0x00,0x00,0x00,0x10,0x00,0x00,0x00,0x00,0x00,0x07,0x00,0x00,0x00,0x01};
         QByteArray buffer(cdata,16);
         
         buffer = buffer+rootByte;
@@ -75,7 +75,7 @@ void WebSocketAPI_Bili::initWebsocket()
     config.setProtocol(QSsl::TlsV1_2);  //得看对方用什么协议
     
     websocket->setSslConfiguration(config);
-  //  QString url = "wss://"+charhost+"/sub";
+    //  QString url = "wss://"+charhost+"/sub";
     QString url = "wss://broadcastlv.chat.bilibili.com:2245/sub";
     websocket->open(QUrl(url));
 }
@@ -92,7 +92,7 @@ void WebSocketAPI_Bili::stop()
 void WebSocketAPI_Bili::getRoomHost(QString strID)
 {
     qDebug()<<"request roomHost ";
-    QNetworkAccessManager* manager = new QNetworkAccessManager(this);
+    manager = new QNetworkAccessManager(this);
     connect(manager,&QNetworkAccessManager::finished,this,&WebSocketAPI_Bili::processHostResponse);
     
     QNetworkRequest request; 
@@ -128,6 +128,35 @@ void WebSocketAPI_Bili::pingpong()
     websocket->sendBinaryMessage(buf);
 }
 
+void WebSocketAPI_Bili::analysisMessage(const QByteArray &json)
+{
+    qDebug()<<"处理完的数据包:"<<json;
+    QJsonDocument document = QJsonDocument::fromJson(json);
+    QJsonObject object = document.object();
+    //qDebug()<<"\njson "<<object["info"].toString();
+    if(object["cmd"].toString() == "DANMU_MSG") //弹幕
+    {
+        QJsonArray info = object["info"].toArray();
+        QString name = info[2].toArray()[1].toString();  //获取弹幕发言人昵称
+        QString danmu = info[1].toString();    //获取弹幕
+        qDebug()<<"array2"<<info[2].toArray();
+        qDebug()<<"name"<<name;
+        qDebug()<<"danmu"<<danmu;
+        emit newChat(name,danmu);
+    }
+    if(object["cmd"].toString() == "SEND_GIFT") //弹幕
+    {
+        QString name = object["data"].toObject()["uname"].toString();  //获取送礼人的昵称
+        QString gift = object["data"].toObject()["giftName"].toString();  //获取礼物名字
+        QString num = QString::number(object["data"].toObject()["num"].toInt());  //获取礼物数量
+        
+        QString lang = name+"送了"+num+"个"+gift;   //拼接语句
+        emit newChat("礼物:",lang);
+        
+    }
+    return;
+}
+
 void WebSocketAPI_Bili::processHostResponse(QNetworkReply *reply)
 {
     QVariant statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
@@ -149,10 +178,11 @@ void WebSocketAPI_Bili::processHostResponse(QNetworkReply *reply)
         QJsonObject object = documen.object();
         
         setHost(object["data"].toObject()["host_server_list"].toArray()[0].toObject()["host"].toString());
-      //  setToken(object["data"].toObject()["token"].toString());
+        //  setToken(object["data"].toObject()["token"].toString());
         setPort(object["data"].toObject()["port"].toInt());
         this->initWebsocket();
     }
+    manager->deleteLater();
 }
 
 void WebSocketAPI_Bili::processChatRsponse(const QByteArray& buff)
@@ -165,6 +195,7 @@ void WebSocketAPI_Bili::processChatRsponse(const QByteArray& buff)
     
     if(data[11] == 0x03)  //心跳
     {
+        qDebug()<<"心跳:"<<data;
         return;
     }
     else if(data[11] == 0x05) //礼物、弹幕、公告
@@ -173,27 +204,29 @@ void WebSocketAPI_Bili::processChatRsponse(const QByteArray& buff)
         int len = data.length()-16;
         QByteArray json = data.mid(16,len);  //截取json 
         qDebug()<<"\njson "<<json;
+        
         if(data[7] ==0x02)   //判断有没有压缩
         { 
         }
-        QJsonDocument document = QJsonDocument::fromJson(json);
-        QJsonObject object = document.object();
-        //qDebug()<<"\njson "<<object["info"].toString();
-        if(object["cmd"].toString() == "DANMU_MSG") //弹幕
+        
+        char chead[] ={0x00,0x10,0x00,0x00};
+        QByteArray head(chead,4);
+        
+        
+        while(1)
         {
-            QJsonArray info = object["info"].toArray();
-            QString name = info[2].toArray()[1].toString();  //获取弹幕发言人昵称
-            QString danmu = info[1].toString();    //获取弹幕
-            qDebug()<<"array2"<<info[2].toArray();
-            qDebug()<<"name"<<name;
-            qDebug()<<"danmu"<<danmu;
-            emit newChat(name,danmu);
-        }
-        if(object["cmd"].toString() == "SEND_GIFT") //弹幕
-        {
+            int index = json.indexOf(head)-4;//粘包二进制协议头位置
+            if(index < 0) //<0 没有粘包
+            {
+                analysisMessage(json);
+                break;
+            }
             
+            QByteArray tmp = json.mid(0,index); 
+            analysisMessage(tmp);
+            json = json.mid(index+16);
         }
-        return;
+        
     }
     else if(data[11] == 0x08)  //认证成功
     {

@@ -29,8 +29,9 @@ public:
     void initWebsocket();
     void stop();
 signals:
-    void newChat(QString name,QString mess);
+  //  void newChat(QString name,QString mess);
 private:
+    QNetworkAccessManager* manager;
     QWebSocket* websocket;
     QTimer* timer = nullptr;
     QString charport = 0;
@@ -45,6 +46,8 @@ private:
     void setJsonData(QString key,QString value);
     void setJsonData(QString key,int value);
     void pingpong();
+    void analysisMessage(const QByteArray& json);
+    
 private slots:
     
     void processHostResponse(QNetworkReply* reply);
