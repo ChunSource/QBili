@@ -4,7 +4,7 @@
 
 用Qt写的bilibili弹幕工具
 
-![cmd-markdown-logo](https://chunsource.top/main.png)
+![cmd-markdown-logo](http://www.chunsource.top/main.png)
 ### [Windows/Mac/Linux 全平台客户端](https://github.com/ChunSource/QBili/releases/tag/1.0.0-beta)
 
 > * C++为语言的高效工具
