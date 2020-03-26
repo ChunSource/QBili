@@ -12,7 +12,7 @@ public:
     
 signals:
     void newChat(QString name,QString message);
-    
+    void newBinray(const QByteArray buff);
 protected:
     int     roomId = 0;
     virtual void run() = 0;

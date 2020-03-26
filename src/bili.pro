@@ -1,4 +1,4 @@
-QT       += core gui network websockets texttospeech
+QT       += core gui network websockets texttospeech quick multimedia
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -17,14 +17,18 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     api_bili.cpp \
+    danmu.cpp \
     main.cpp \
     mainwindow.cpp \
+    song.cpp \
     soundthread.cpp \
     websocketapi_bili.cpp
 
 HEADERS += \
     api_bili.h \
+    danmu.h \
     mainwindow.h \
+    song.h \
     soundthread.h \
     websocketapi_bili.h
 
@@ -41,4 +45,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 RESOURCES += \
     resource.qrc
+
+RC_FILE += app.rc
 

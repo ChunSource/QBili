@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>bilibili.ico</file>
+        <file>main.qml</file>
     </qresource>
 </RCC>

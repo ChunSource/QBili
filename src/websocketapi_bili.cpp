@@ -1,6 +1,7 @@
 #include "websocketapi_bili.h"
 #include <QDebug>
 #include <QAbstractSocket>
+#include <QLatin1Char>
 
 WebSocketAPI_Bili::WebSocketAPI_Bili(int id,QObject *parent) : API_Bili(id,parent)
 {
@@ -130,19 +131,19 @@ void WebSocketAPI_Bili::pingpong()
 
 void WebSocketAPI_Bili::analysisMessage(const QByteArray &json)
 {
-    qDebug()<<"处理完的数据包:"<<json;
+    qDebug()<<"处理完的数据包:"<<QString(json);
+    emit newBinray(json);
     QJsonDocument document = QJsonDocument::fromJson(json);
     QJsonObject object = document.object();
-    //qDebug()<<"\njson "<<object["info"].toString();
     if(object["cmd"].toString() == "DANMU_MSG") //弹幕
     {
         QJsonArray info = object["info"].toArray();
         QString name = info[2].toArray()[1].toString();  //获取弹幕发言人昵称
         QString danmu = info[1].toString();    //获取弹幕
-        qDebug()<<"array2"<<info[2].toArray();
         qDebug()<<"name"<<name;
         qDebug()<<"danmu"<<danmu;
         emit newChat(name,danmu);
+
     }
     if(object["cmd"].toString() == "SEND_GIFT") //弹幕
     {
@@ -154,6 +155,7 @@ void WebSocketAPI_Bili::analysisMessage(const QByteArray &json)
         emit newChat("礼物:",lang);
         
     }
+    
     return;
 }
 
@@ -203,7 +205,6 @@ void WebSocketAPI_Bili::processChatRsponse(const QByteArray& buff)
         
         int len = data.length()-16;
         QByteArray json = data.mid(16,len);  //截取json 
-        qDebug()<<"\njson "<<json;
         
         if(data[7] ==0x02)   //判断有没有压缩
         { 

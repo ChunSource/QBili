@@ -138,8 +138,8 @@ border-radius: 3px;
      <rect>
       <x>10</x>
       <y>50</y>
-      <width>381</width>
-      <height>321</height>
+      <width>371</width>
+      <height>311</height>
      </rect>
     </property>
     <property name="currentIndex">
@@ -147,11 +147,25 @@ border-radius: 3px;
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
-      <string>Tab 1</string>
+      <string>Log</string>
      </attribute>
      <layout class="QGridLayout" name="gridLayout">
       <item row="0" column="0">
        <widget class="QTextEdit" name="textEdit"/>
+      </item>
+     </layout>
+    </widget>
+    <widget class="QWidget" name="tab_2">
+     <attribute name="title">
+      <string>点歌</string>
+     </attribute>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="0" column="0">
+       <widget class="QTextEdit" name="textEditSong">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>
@@ -212,6 +226,50 @@ border-radius: 3px;
      </widget>
      <widget class="QComboBox" name="comboBoxLanguage"/>
     </widget>
+   </widget>
+   <widget class="QCheckBox" name="checkBoxMessageShow">
+    <property name="geometry">
+     <rect>
+      <x>400</x>
+      <y>170</y>
+      <width>241</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">font: 13pt &quot;楷体&quot;;</string>
+    </property>
+    <property name="text">
+     <string>弹幕悬浮窗口</string>
+    </property>
+    <property name="checkable">
+     <bool>true</bool>
+    </property>
+    <property name="checked">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="checkBoxSongUse">
+    <property name="geometry">
+     <rect>
+      <x>400</x>
+      <y>200</y>
+      <width>241</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">font: 13pt &quot;楷体&quot;;</string>
+    </property>
+    <property name="text">
+     <string>点歌</string>
+    </property>
+    <property name="checkable">
+     <bool>true</bool>
+    </property>
+    <property name="checked">
+     <bool>false</bool>
+    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
