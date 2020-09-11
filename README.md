@@ -5,9 +5,9 @@
 用Qt写的bilibili弹幕工具
 
 <<<<<<< HEAD
-![cmd-markdown-logo](https://chunsource.top/main.png)
+![cmd-markdown-logo](http://chunsource.top/main.png)
 =======
-![QBili](https://chunsource.top/main.png)
+![QBili](http://chunsource.top/main.png)
 >>>>>>> 475d2ebda5b27320d173af7bc46ba4273d85ab79
 ### [Windows/Mac/Linux 全平台客户端](https://github.com/ChunSource/QBili/releases/tag/1.0.0-beta)
 
