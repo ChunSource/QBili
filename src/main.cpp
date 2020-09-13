@@ -1,4 +1,4 @@
-#include "mainwindow.h"
+﻿#include "mainwindow.h"
 
 #include "danmu.h"
 #include <QApplication>
@@ -12,11 +12,14 @@
 #include <QTextStream>
 #include <QMutex>
 #include <QDateTime>
+#define ZLIB_WINAPI
 using namespace std;
- 
+
+#pragma comment(lib,"S:/Qt/c++/bili/zlib.lib")
+
 QMutex mutex;//日志代码互斥锁
 QString timePoint;
-
+#pragma execution_character_set("utf-8")
 void LogMsgOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
  {	 
 //	 mutex.lock();
@@ -49,7 +52,7 @@ void LogMsgOutput(QtMsgType type, const QMessageLogContext &context, const QStri
      }
 	 
 	 QFile file;
-	 QString path = QString("log%1.lgt").arg(timePoint);
+	 QString path = QString("./log/log%1.lgt").arg(timePoint);
 	 file.setFileName(path);
 	 if (!file.open(QIODevice::ReadWrite | QIODevice::Append))
 	 {
@@ -68,10 +71,9 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     
 #ifndef _DEBUG
-	timePoint = QDateTime::currentDateTime().toString("yyyyMMddHHmmss");
-	qInstallMessageHandler(LogMsgOutput);
+//	timePoint = QDateTime::currentDateTime().toString("yyyyMMddHHmmss");
+//	qInstallMessageHandler(LogMsgOutput);
 #endif
-    
     MainWindow w;
     w.show();
     return a.exec();

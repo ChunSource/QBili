@@ -10,6 +10,7 @@
 #include <QJsonDocument>
 #include <QQmlEngine>
 #include <QQmlComponent>
+#include <QQuickWindow>
 
 namespace Ui {
 class Danmu;
@@ -24,7 +25,7 @@ public:
     ~Danmu();
 public slots:
     void addBinray(const QByteArray buffer);
-    void addMessage(QString color,QString title,QString level,QString userLevelColor,QString ulevel,QString danmu,QString username);
+    void addMessage(QString color,QString title,QString level,QString userLevelColor,QString ulevel,QString danmu,QString username,bool showTitle);
     void show();
     void hide();
 private:

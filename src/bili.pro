@@ -17,6 +17,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     api_bili.cpp \
+    bilisetting.cpp \
     danmu.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -26,6 +27,7 @@ SOURCES += \
 
 HEADERS += \
     api_bili.h \
+    bilisetting.h \
     danmu.h \
     mainwindow.h \
     song.h \
@@ -47,4 +49,9 @@ RESOURCES += \
     resource.qrc
 
 RC_FILE += app.rc
+
+LIBS += -LS:/Qt/c++/bili/zlib.lib
+INCLUDEPATH += $$PWD/zlib
+
+DEFINES += ZLIB_WINAPI
 

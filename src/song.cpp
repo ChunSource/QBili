@@ -1,4 +1,4 @@
-#include "song.h"
+﻿#include "song.h"
 #include <QDebug>
 
 Song::Song(QObject *parent) : QThread(parent)

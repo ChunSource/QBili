@@ -1,5 +1,10 @@
-#include "danmu.h"
+﻿#include "danmu.h"
 #include <QDebug>
+#include <QThread>
+#if _MSC_VER >=1600    // MSVC2015>1899,对于MSVC2010以上版本都可以使用
+#pragma execution_character_set("utf-8")
+#endif
+
 
 Danmu::Danmu(QObject *parent) :
     QObject(parent)
@@ -7,13 +12,12 @@ Danmu::Danmu(QObject *parent) :
     eng = new QQmlEngine();
     compent = new QQmlComponent(eng,QUrl(QStringLiteral("qrc:/main.qml")));
     root = compent->create();
-    //root =  (QObject*)ui->quickWidget->rootObject();
     
 }
 
 Danmu::~Danmu()
 {
-    root->deleteLater();
+  //  root->deleteLater();
     compent->deleteLater();
     eng->deleteLater();
 }
@@ -32,7 +36,7 @@ void Danmu::addBinray(const QByteArray buffer)
         QString level="0";
         QString userLevelColor = "#5896de";
         QString ulevel = "0";
-        
+        bool showTitle = false;
         qDebug()<<"name"<<name;
         qDebug()<<"danmu"<<danmu;
         
@@ -42,6 +46,7 @@ void Danmu::addBinray(const QByteArray buffer)
             color = "#"+dec2Hex(gp[4].toInt());
             title = gp[1].toString();
             level = QString::number(gp[0].toInt());
+            showTitle = true;
         }
         
         if(!info[4].toArray().empty())  //有等级
@@ -51,7 +56,7 @@ void Danmu::addBinray(const QByteArray buffer)
             ulevel = QString::number(dj[0].toInt());
         }
         
-        addMessage(color,title,level,userLevelColor,ulevel,danmu,name);
+        addMessage(color,title,level,userLevelColor,ulevel,danmu,name,showTitle);
     }
     if(object["cmd"].toString() == "SEND_GIFT") //弹幕
     {
@@ -66,7 +71,7 @@ void Danmu::addBinray(const QByteArray buffer)
     return;
 }
 
-void Danmu::addMessage(QString color, QString title, QString level, QString userLevelColor, QString ulevel, QString danmu, QString username)
+void Danmu::addMessage(QString color, QString title, QString level, QString userLevelColor, QString ulevel, QString danmu, QString username,bool showTitle)
 {
     QMetaObject::invokeMethod(root , "addMessage",
                               Q_ARG(QVariant, QVariant(color)),//color
@@ -75,7 +80,8 @@ void Danmu::addMessage(QString color, QString title, QString level, QString user
                               Q_ARG(QVariant, QVariant(userLevelColor)),//userLevelColor
                               Q_ARG(QVariant, QVariant(ulevel)),//ulevel
                               Q_ARG(QVariant, QVariant(danmu)),//danmu
-                              Q_ARG(QVariant, QVariant(username)));//username  
+                              Q_ARG(QVariant, QVariant(username)),//username  
+                              Q_ARG(QVariant, QVariant(showTitle)));//showTitle
 }
 
 void Danmu::show()

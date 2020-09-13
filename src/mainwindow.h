@@ -1,4 +1,4 @@
-#ifndef MAINWINDOW_H
+﻿#ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
 #include <QMainWindow>
@@ -7,6 +7,7 @@
 #include "soundthread.h"
 #include "danmu.h"
 #include "song.h"
+#include "bilisetting.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -19,7 +20,7 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-    
+    QString ROOMID="ROOMID";
 private:
     Ui::MainWindow *ui;
     API_Bili *api = nullptr;
@@ -39,6 +40,7 @@ private slots:
     void MessageBox_Binray(const QByteArray buff);
     void speechSupportLanguage(QVector<QLocale> list);  //获取语音播报支持的语言
     void logSong(QString song);
+    void readConfig();
 signals:
     void setSpeech(bool ok);
     void setSong(bool ok);

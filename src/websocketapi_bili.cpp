@@ -1,7 +1,12 @@
-#include "websocketapi_bili.h"
+﻿#include "websocketapi_bili.h"
 #include <QDebug>
 #include <QAbstractSocket>
 #include <QLatin1Char>
+
+#if _MSC_VER >=1600    // MSVC2015>1899,对于MSVC2010以上版本都可以使用
+#pragma execution_character_set("utf-8")
+#endif
+
 
 WebSocketAPI_Bili::WebSocketAPI_Bili(int id,QObject *parent) : API_Bili(id,parent)
 {
@@ -76,8 +81,8 @@ void WebSocketAPI_Bili::initWebsocket()
     config.setProtocol(QSsl::TlsV1_2);  //得看对方用什么协议
     
     websocket->setSslConfiguration(config);
-    //  QString url = "wss://"+charhost+"/sub";
-    QString url = "wss://broadcastlv.chat.bilibili.com:2245/sub";
+    QString url = "wss://"+charhost+"/sub";
+    // QString url = "wss://broadcastlv.chat.bilibili.com:2245/sub";
     websocket->open(QUrl(url));
 }
 
@@ -131,7 +136,7 @@ void WebSocketAPI_Bili::pingpong()
 
 void WebSocketAPI_Bili::analysisMessage(const QByteArray &json)
 {
-    qDebug()<<"处理完的数据包:"<<QString(json);
+    qDebug()<<QString::fromLocal8Bit("处理完的数据包:")<<QString::fromUtf8(json);
     emit newBinray(json);
     QJsonDocument document = QJsonDocument::fromJson(json);
     QJsonObject object = document.object();
@@ -143,7 +148,7 @@ void WebSocketAPI_Bili::analysisMessage(const QByteArray &json)
         qDebug()<<"name"<<name;
         qDebug()<<"danmu"<<danmu;
         emit newChat(name,danmu);
-
+        
     }
     if(object["cmd"].toString() == "SEND_GIFT") //弹幕
     {
@@ -194,20 +199,20 @@ void WebSocketAPI_Bili::processChatRsponse(const QByteArray& buff)
     QByteArray data;
     data.clear();
     data= buff; //获取数据类型
-    
-    if(data[11] == 0x03)  //心跳
+    if((int)data[11] == 0x03)  //心跳
     {
         qDebug()<<"心跳:"<<data;
         return;
     }
-    else if(data[11] == 0x05) //礼物、弹幕、公告
+    else if((int)data[11] == 0x05) //礼物、弹幕、公告
     {
         
         int len = data.length()-16;
         QByteArray json = data.mid(16,len);  //截取json 
-        
-        if(data[7] ==0x02)   //判断有没有压缩
+        bool isZlib =false;
+        if((int)data[7] ==0x02)   //判断有没有压缩
         { 
+            isZlib = true;
         }
         
         char chead[] ={0x00,0x10,0x00,0x00};
@@ -219,6 +224,51 @@ void WebSocketAPI_Bili::processChatRsponse(const QByteArray& buff)
             int index = json.indexOf(head)-4;//粘包二进制协议头位置
             if(index < 0) //<0 没有粘包
             {
+                if(isZlib)
+                {
+                    
+                    z_stream stream;
+                    char *in = new char[500];
+                    char *out = new char[500];
+                    memset(in, 0, 500);
+                    memset(out, 0, 500);
+                    memcpy(in,json.data(),len);
+                    
+                    stream.next_in = (z_const Bytef*)in;
+                    stream.avail_in = 500;
+                    
+                    stream.next_out = (Bytef*)out;
+                    stream.avail_out = 500;
+                    
+                    stream.zalloc = (alloc_func)0;
+                    stream.zfree = (free_func)0;
+                    stream.opaque = (voidpf)0;
+                    
+                    int err = inflateInit(&stream);
+                    if(err != 0)
+                    {
+                        qDebug()<<"error "<<err;
+                        err = 0;
+                    }
+                    
+                    err = inflate(&stream,Z_SYNC_FLUSH);
+                    if(err != 0)
+                    {
+                        qDebug()<<"error "<<err;
+                        err = 0;
+                    }
+                    int totalLength = stream.total_out;
+                    err=inflateEnd(&stream);
+                    if(err != 0)
+                    {
+                        qDebug()<<"error "<<err;
+                    }
+                    json = QByteArray(out,totalLength);
+                    qDebug()<<"解压: "<<json;
+                    processChatRsponse(json);
+                    return;
+                    
+                }
                 analysisMessage(json);
                 break;
             }
@@ -229,7 +279,7 @@ void WebSocketAPI_Bili::processChatRsponse(const QByteArray& buff)
         }
         
     }
-    else if(data[11] == 0x08)  //认证成功
+    else if((int)data[11] == 0x08)  //认证成功
     {
         bool ok;
         int len = data.mid(0,4).toHex().toInt(&ok,16);

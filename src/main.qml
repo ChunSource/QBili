@@ -4,18 +4,22 @@ import QtQuick.Window 2.14
 
 Window {
     id: mrect
-    visible: false
+    visible: true
     width: 350
     height: 650
     title: qsTr("QBili 弹幕窗口")
     opacity: 1
     property int listviewwidth: 400
     property int listviewheigth: 400
-    
+
     Component.onCompleted:
         {
+        hide()
+        console.log("初始化 qml")
+        //function addMessage(mcolor,title,level,userlevelcolor,ulevel,message,name,showtitle)
+        //addMessage("#5896de","no","15","#969696","15","测试弹幕","ChunSource",true)
+        //addMessage("#5896de","我是勋章","15","#969696","15","测试弹幕","ChunSource",false)
         }
-    
     ListModel
     {
         id : dmode
@@ -27,6 +31,7 @@ Window {
         width: mrect.width-10
         height: mrect.height
         model: dmode
+
         delegate: Rectangle
         {
             anchors.topMargin:100
@@ -37,6 +42,7 @@ Window {
                 width: one.width+two.width+1
                 height: 20
                 radius: 2
+                visible:showTitle
                 anchors.left: parent.left
                 Rectangle{//徽章
                     id:one
@@ -88,9 +94,9 @@ Window {
             
             Rectangle{//用户等级
                 id:userLevelRectangle
-                width: userLevel.contentWidth+5
+                width: userLevel.contentWidth+5+5
                 height: 20
-                anchors.left: mid.right
+                anchors.left: (mid.visible)?mid.right:parent.left
                 Rectangle{
                     height: 20
                     width: userLevel.contentWidth+5
@@ -172,7 +178,7 @@ Window {
         anchors.bottom: parent.bottom
     }
     
-    function addMessage(mcolor,title,level,userlevelcolor,ulevel,message,name)
+    function addMessage(mcolor,title,level,userlevelcolor,ulevel,message,name,showtitle)
     {
         addElement({"mcolor":mcolor,
                        "title":title,
@@ -180,7 +186,8 @@ Window {
                        "userLevelColor":userlevelcolor,
                        "ulevel":ulevel,
                        "danmu":message,
-                       "userName":name})
+                       "userName":name,
+                       "showTitle":showtitle})
         listview.positionViewAtEnd()
         
     }

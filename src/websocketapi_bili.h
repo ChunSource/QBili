@@ -1,4 +1,4 @@
-#ifndef WEBSOCKETAPI_BILI_H
+﻿#ifndef WEBSOCKETAPI_BILI_H
 #define WEBSOCKETAPI_BILI_H
 
 #include <QObject>
@@ -13,6 +13,7 @@
 #include <QWebSocket>
 #include <QTimer>
 #include "api_bili.h"
+#include "zlib.h"
 
 
 
@@ -38,7 +39,7 @@ private:
     QString charhost = "";  //房间域名
     QString chartoken = ""; //websocket Token
  //   QByteArray rootByte = "{\"uid\":19176530,\"roomid\":109216,\"protover\":2,\"platform\":\"web\",\"clientver\":\"1.10.3\",\"type\":2}";
-    QByteArray rootByte = "{\"uid\":0,\"roomid\":109216}";   //只保留这两个，不然会zlib压缩
+    QByteArray rootByte = "{\"uid\":0,\"roomid\":109216,\"protover\":2}";   //只保留这两个，不然会zlib压缩
     QByteArray rootData;
     
     void run();
