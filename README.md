@@ -4,14 +4,7 @@
 
 用Qt写的bilibili弹幕工具
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-![cmd-markdown-logo](http://chunsource.top/main.png)
-=======
-![QBili](http://chunsource.top/main.png)
->>>>>>> 475d2ebda5b27320d173af7bc46ba4273d85ab79
-### [Windows/Mac/Linux 全平台客户端](https://github.com/ChunSource/QBili/releases/tag/1.0.0-beta)
-=======
+
 ![cmd-markdown-logo](https://chunsource.top/main.png)
 ### [Windows/Mac/Linux 全平台客户端](https://github.com/ChunSource/QBili/releases/tag/1.1.0)
 >>>>>>> 31b43154d9eee7d8042b1ec621ad52bef7c3040d
